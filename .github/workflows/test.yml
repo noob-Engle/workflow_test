@@ -1,0 +1,44 @@
+name: Information collection
+
+on: [push]
+
+jobs:
+  Scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Initialize environment
+      run: |
+          sudo apt install jq gawk grep sed python3 python3-pip nmap
+          sudo python3 -m pip install -r requirements.txt
+          sudo python3 -m pip install dnspython
+          chmod +x tools/httpx && chmod +x tools/httprobe
+          sudo mkdir ./result/
+          sudo chmod 777 -R ./result/
+    
+    - name: Get domain information
+      run: |
+          sudo python3 dnsdump_pipeline.py ibood.com >> ./result/domain_out
+          
+    - name: Get & Scan domain ip
+      run: |
+          sudo python3 get_ipinfo.py ./result/domain_out >> ./result/ipinfo_out
+          echo "YXdrIC1GICd8JyAne3ByaW50JDZ9JyAuL3Jlc3VsdC9pcGluZm9fb3V0ID4+IC4vcmVzdWx0L2lw" | base64 -d | sudo bash
+          sudo bash -c "cat ./result/ip | sort | uniq > ./result/ip"
+          sudo nmap -p- -T5 --min-rate=10000 -iL ./result/ip  -oG ./result/nmap_out 
+          echo "Y2F0IC4vcmVzdWx0L25tYXBfb3V0IHwgZWdyZXAgLXYgIl4jfFN0YXR1czogVXAiICROTUFQX0ZJTEUgfCBjdXQgLWQnICcgLWYyLDQtIHwgc2VkIC1uIC1lICdzL0lnbm9yZWQuKi8vcCcgIHwgYXdrICd7IGZvcihpPTI7IGk8PU5GOyBpKyspIHsgYT1hIiAiJGk7IH07IHNwbGl0KGEscywiLCIpOyBmb3IoZSBpbiBzKSB7IHNwbGl0KHNbZV0sdiwiLyIpOyBwcmludGYgJDEgIiAlLTdzICVzXG4iICwgdlsxXSwgdls1XX07IGE9IiIgfScgPiAuL3Jlc3VsdC9wb3J0X291dF8="  | base64 -d | sudo bash 
+          echo "Y2F0IC4vcmVzdWx0L3BvcnRfb3V0XyB8IGF3ayAne3ByaW50JDEsJDJ9J3wgc2VkICdzLyAvOi9nJyA+PiAuL3Jlc3VsdC9wb3J0X291dA==" | base64 -d | sudo bash
+          sudo cat ./result/port_out ./result/domain_out | ./tools/httprobe > ./result/httprobe_out
+    
+    - name: Scan the port of web application
+      run: |
+          sudo cat ./result/httprobe_out | ./tools/httpx -status-code -title -follow-redirects -silent -no-color -content-length > ./result/httpx_out 
+          echo "Y2F0IC4vcmVzdWx0L3NlZF9vdXQgfCBhd2sgJ3twcmludCQxfScgPiAuL3Jlc3VsdC91cmxfb3V0" | base64 -d | sudo bash
+          sudo chmod 777 -R ./result/
+          
+    - name: Deliver result
+      uses: actions/upload-artifact@v2
+      with:
+        name: Result
+        path: ./result/
