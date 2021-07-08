@@ -25,8 +25,7 @@ jobs:
       run: |
           sudo python3 get_ipinfo.py ./result/domain_out >> ./result/ipinfo_out
           echo "YXdrIC1GICd8JyAne3ByaW50JDZ9JyAuL3Jlc3VsdC9pcGluZm9fb3V0ID4+IC4vcmVzdWx0L2lw" | base64 -d | sudo bash
-          sudo bash -c "cat ./result/ip | sort | uniq > ./result/ip"
-          sudo nmap -p- -T5 --min-rate=10000 -iL ./result/ip  -oG ./result/nmap_out 
+          sudo bash -c "cat ./result/ip | sort | uniq > ./result/ip" &&  sudo nmap -p- -T5 --min-rate=10000 -iL ./result/ip  -oG ./result/nmap_out 
           echo "Y2F0IC4vcmVzdWx0L25tYXBfb3V0IHwgZWdyZXAgLXYgIl4jfFN0YXR1czogVXAiICROTUFQX0ZJTEUgfCBjdXQgLWQnICcgLWYyLDQtIHwgc2VkIC1uIC1lICdzL0lnbm9yZWQuKi8vcCcgIHwgYXdrICd7IGZvcihpPTI7IGk8PU5GOyBpKyspIHsgYT1hIiAiJGk7IH07IHNwbGl0KGEscywiLCIpOyBmb3IoZSBpbiBzKSB7IHNwbGl0KHNbZV0sdiwiLyIpOyBwcmludGYgJDEgIiAlLTdzICVzXG4iICwgdlsxXSwgdls1XX07IGE9IiIgfScgPiAuL3Jlc3VsdC9wb3J0X291dF8="  | base64 -d | sudo bash 
           echo "Y2F0IC4vcmVzdWx0L3BvcnRfb3V0XyB8IGF3ayAne3ByaW50JDEsJDJ9J3wgc2VkICdzLyAvOi9nJyA+PiAuL3Jlc3VsdC9wb3J0X291dA==" | base64 -d | sudo bash
           sudo cat ./result/port_out ./result/domain_out | ./tools/httprobe > ./result/httprobe_out
