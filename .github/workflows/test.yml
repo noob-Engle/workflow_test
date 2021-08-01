@@ -19,7 +19,7 @@ jobs:
     
     - name: Get domain information
       run: |
-          sudo python3 dnsdump_pipeline.py ibood.com >> ./result/domain_out
+          sudo python3 dnsdump_pipeline.py baidu.com >> ./result/domain_out
           
     - name: Get & Scan domain ip
       run: |
